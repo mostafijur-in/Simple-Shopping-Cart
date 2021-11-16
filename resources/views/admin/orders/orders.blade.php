@@ -15,7 +15,7 @@
                     <tr>
                         <th>Order#</th>
                         <th>Customer</th>
-                        <th>Items</th>
+                        <th>Products</th>
                         <th>Total</th>
                         <th>Date/Time</th>
                         <th style="width:120px"></th>
