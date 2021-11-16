@@ -115,7 +115,7 @@ class OrderController extends Controller
             $cart[$id]['quantity']++;
         } else {
             $cart[$id] = [
-                "name" => $product->name,
+                "title" => $product->title,
                 "quantity" => 1,
                 "price" => $product->price,
                 "photo" => $product->photo
