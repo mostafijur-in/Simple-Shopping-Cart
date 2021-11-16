@@ -10,7 +10,7 @@
 ## Project Setup Instructions
 
 1. Clone this repo to your local / remote server.
-2. Navigate to the application directory `cd Voting-System-App`.
+2. Navigate to the application directory `cd Simple-Shopping-Cart`.
 3. Copy `.env.example` to `.env` and update configuration values (Importantly the database connection).
 4. Run the following commands-\
     `composer install`\
