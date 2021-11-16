@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     /**
@@ -14,7 +16,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $Products   = Product::paginate(30);
+        return view('admin.products.products', compact('Products'));
     }
 
     /**
@@ -24,7 +27,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.products.add-product');
     }
 
     /**
@@ -35,7 +38,67 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $result = [];
+        $errors = [];
+
+        $validator   = $request->validate([
+            'sku'       => 'required|max:50',
+            'title'         => 'required|regex:/^[a-zA-Z0-9\s]+$/',
+            'description'   => 'required|regex:/^[a-zA-Z0-9\s]+$/',
+            'qty'       => 'required|numeric',
+            'price'     => 'required|numeric',
+        ]);
+
+        $photoPath   = null;
+        // Upload logo if selected
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            $original_filename  = $request->file('photo')->getClientOriginalName();
+            $fileSize   = $request->file('photo')->getSize();
+
+            $ext = pathinfo($original_filename, PATHINFO_EXTENSION);
+            if(!in_array($ext, ['png', 'jpg', 'jpeg', 'gif'])) {
+                $errors[]   = "Select a valid logo.";
+            }
+            if($fileSize > 500*1024) {
+                $errors[]   = "File size more than 500kb not allowed.";
+            }
+
+            if(empty($errors)) {
+                $photoPath = Storage::disk('public')->putFile('product-photos', $request->file('photo'));
+            }
+        }
+
+        if(empty($photoPath)) {
+            $photoPath  = null;
+        }
+
+        if(empty($errors)) {
+            try {
+                Product::create([
+                    'sku'  => $request->sku,
+                    'title'  => $request->title,
+                    'description'  => $request->description,
+                    'qty'  => $request->qty,
+                    'price'  => $request->price,
+                    'photo'  => $photoPath,
+                ]);
+
+                return json_encode([
+                    "status"    => "success",
+                    "message"   => "Product details saved."
+                ]);
+            } catch(Exception $e) {
+                return json_encode([
+                    "status"    => "error",
+                    "message"   => "ERROR: ". $e->getMessage()
+                ]);
+            }
+        } else {
+            return json_encode([
+                "status"    => "error",
+                "message"   => "ERROR: ". implode(' ', $errors)
+            ]);
+        }
     }
 
     /**
@@ -46,6 +109,18 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $product_id
+     * @return \Illuminate\Http\Response
+     */
+    public function single_product($product_id)
+    {
+        $product    = Product::findOrFail($product_id);
         return view('single-product', compact('product'));
     }
 
@@ -57,7 +132,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('admin.products.edit-product', compact('product'));
     }
 
     /**
@@ -69,7 +144,75 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $result = [];
+        $errors = [];
+
+        $validator   = $request->validate([
+            'sku'       => 'required|max:50',
+            'title'         => 'required|regex:/^[a-zA-Z0-9.\s]+$/',
+            'description'   => 'required|regex:/^[a-zA-Z0-9.\s]+$/',
+            'qty'       => 'required|numeric',
+            'price'     => 'required|numeric',
+        ]);
+
+        $photoPath      = null;
+        $oldPhotoPath   = $product->photo;
+
+        // Upload logo if selected
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            $original_filename  = $request->file('photo')->getClientOriginalName();
+            $fileSize   = $request->file('photo')->getSize();
+
+            $ext = pathinfo($original_filename, PATHINFO_EXTENSION);
+            if(!in_array($ext, ['png', 'jpg', 'jpeg', 'gif'])) {
+                $errors[]   = "Select a valid logo.";
+            }
+            if($fileSize > 500*1024) {
+                $errors[]   = "File size more than 500kb not allowed.";
+            }
+
+            if(empty($errors)) {
+                $photoPath = Storage::disk('public')->putFile('product-photos', $request->file('photo'));
+            }
+        }
+
+        if(empty($photoPath)) {
+            $photoPath  = $oldPhotoPath;
+        }
+
+        if(empty($errors)) {
+            try {
+                $product->update([
+                    'sku'  => $request->sku,
+                    'title'  => $request->title,
+                    'description'  => $request->description,
+                    'qty'  => $request->qty,
+                    'price'  => $request->price,
+                    'photo'  => $photoPath,
+                ]);
+
+                if($photoPath !== $oldPhotoPath) {
+                    Storage::disk('public')->delete($oldPhotoPath);
+                }
+
+                $redirect   = route('admin.products.index');
+                return json_encode([
+                    "status"    => "success",
+                    "message"   => "Product details saved.",
+                    "redirect"   => $redirect
+                ]);
+            } catch(Exception $e) {
+                return json_encode([
+                    "status"    => "error",
+                    "message"   => "ERROR: ". $e->getMessage()
+                ]);
+            }
+        } else {
+            return json_encode([
+                "status"    => "error",
+                "message"   => "ERROR: ". implode(' ', $errors)
+            ]);
+        }
     }
 
     /**
@@ -81,85 +224,5 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
-    }
-
-    /**
-     * View cart
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function cart()
-    {
-        return view('cart');
-    }
-
-    /**
-     * Add product to cart
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function addToCart(Request $request)
-    {
-        $id = $request->product_id;
-        $product = Product::findOrFail($id);
-
-        $cart = session()->get('cart', []);
-
-        if(isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-            $cart[$id] = [
-                "name" => $product->name,
-                "quantity" => 1,
-                "price" => $product->price,
-                "image" => $product->image
-            ];
-        }
-
-        session()->put('cart', $cart);
-        return json_encode([
-            'status'    => 'success',
-            'message'   => 'Product added to cart successfully!'
-        ]);
-    }
-
-    /**
-     * Update cart
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function updateCart(Request $request)
-    {
-        if($request->id && $request->quantity){
-            $cart = session()->get('cart');
-            $cart[$request->id]["quantity"] = $request->quantity;
-            session()->put('cart', $cart);
-
-            return json_encode([
-                'status'    => 'success',
-                'message'   => 'Cart updated successfully!'
-            ]);
-        }
-    }
-
-    /**
-     * Remove product from cart
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function removeFromCart(Request $request)
-    {
-        if($request->id) {
-            $cart = session()->get('cart');
-            if(isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
-            }
-
-            return json_encode([
-                'status'    => 'success',
-                'message'   => 'Product removed from cart!'
-            ]);
-        }
     }
 }

@@ -11,16 +11,22 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css')
+mix.js('resources/assets/js/app.js', 'public/js')
+    .sass('resources/assets/sass/app.scss', 'public/css')
     .sourceMaps();
 
 
 // Custom styles
-mix.styles('resources/css/styles.css', 'public/css/styles.css');
+mix.styles('resources/assets/css/styles.css', 'public/css/styles.css');
 
 // Custom scripts
-mix.js('resources/js/scripts.js', 'public/js/scripts.js');
+mix.js('resources/assets/js/scripts.js', 'public/js/scripts.js')
+    .js('resources/assets/js/admin-scripts.js', 'public/js/admin-scripts.js')
+    .js('resources/assets/js/auth.js', 'public/js/auth.js');
 
 // Copy images
-mix.copyDirectory('resources/img', 'public/images');
+mix.copyDirectory('resources/assets/img', 'public/images');
+
+// NiceAdmin Bootstrap v5 Template assets for studentuser dashboard
+// Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+mix.copyDirectory('resources/assets/niceadmin', 'public/niceadmin');

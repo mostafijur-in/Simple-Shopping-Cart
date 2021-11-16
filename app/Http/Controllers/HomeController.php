@@ -28,4 +28,14 @@ class HomeController extends Controller
         $Products   = Product::paginate(30);
         return view('home', compact('Products'));
     }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function admin_index()
+    {
+        return redirect()->route('admin.products.index');
+    }
 }

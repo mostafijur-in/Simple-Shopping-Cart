@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 
 /*
@@ -16,19 +18,39 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Redirect to login page
+Route::get('/', function () {
+    return redirect('login');
+});
 
-Auth::routes();
+// Auth Routes
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'attemptLogin']);
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'attemptRegister']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/auth-ajax', [AuthController::class, 'ajax']);
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Product routes
-Route::resource('products', ProductController::class);
+Route::get('products/{id}', [ProductController::class, 'single_product'])->name('products.single');
 
 // Cart routes
-Route::get('cart', [ProductController::class, 'cart'])->name('cart');
-Route::post('cart/add', [ProductController::class, 'addToCart'])->name('cart.add');
-Route::patch('cart/update', [ProductController::class, 'updateCart'])->name('cart.update');
-Route::delete('cart/remove', [ProductController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('cart', [OrderController::class, 'cart'])->name('cart');
+Route::post('cart/add', [OrderController::class, 'addToCart'])->name('cart.add');
+Route::patch('cart/update', [OrderController::class, 'updateCart'])->name('cart.update');
+Route::delete('cart/remove', [OrderController::class, 'removeFromCart'])->name('cart.remove');
+
+// Orders / checkout
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('checkout', [OrderController::class, 'checkout'])->name('checkout');
+
+    // Admin routes
+    Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['can:isAdmin']], function () {
+        Route::get('/', [HomeController::class, 'admin_index'])->name('home');
+
+        Route::resource('/products', ProductController::class);
+        Route::resource('/orders', OrderController::class);
+    });
+});

@@ -12,10 +12,12 @@
                     $product_id    = $product->product_id;
                     $title  = $product->title;
                     $desc  = $product->description;
-                    $price  = "&#8377;". number_format($product->price, 2);
-                    $photo  = "https://via.placeholder.com/640x480.png/?text=640x480";
+                    $price  = ol_rupee($product->price, 2);
 
-                    $productUrl = route('products.show', ['product' => $product_id]);
+                    $photo  = $product->photo;
+                    $photo  = product_img_src($photo, "640x480");
+
+                    $productUrl = route('products.single', ['id' => $product_id]);
                 @endphp
 
                 <div class="col-12 col-sm-5 col-md-4">
@@ -29,7 +31,7 @@
                         <p class="h5 mt-2">{!! $price !!}</p>
 
                         <button id="addToCartBtn" class="btn btn-primary mt-2" data-product-id="{{ $product_id }}">Add To Cart</button>
-                        <div id="addToCartStatus" class="my2"></div>
+                        <div id="addToCartStatus" class="my-2"></div>
 
                         <p class="mt-5">{!! $desc !!}</p>
                     </div>

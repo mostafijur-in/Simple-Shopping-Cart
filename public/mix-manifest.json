@@ -1,8 +1,11 @@
 {
     "/js/app.js": "/js/app.js",
     "/js/scripts.js": "/js/scripts.js",
+    "/js/admin-scripts.js": "/js/admin-scripts.js",
+    "/js/auth.js": "/js/auth.js",
     "/css/app.css": "/css/app.css",
     "/css/styles.css": "/css/styles.css",
-    "/images/shopping-cart-icon.png": "/images/shopping-cart-icon.png",
-    "/images/loading-4-dots.gif": "/images/loading-4-dots.gif"
+    "/images/loading-4-dots.gif": "/images/loading-4-dots.gif",
+    "/images/profile-img.png": "/images/profile-img.png",
+    "/images/shopping-cart-icon.png": "/images/shopping-cart-icon.png"
 }

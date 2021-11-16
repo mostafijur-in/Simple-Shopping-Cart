@@ -8,20 +8,15 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form id="register_form">
                         @csrf
 
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input type="text" name="full_name" id="full_name" class="form-control form-control-sm reqField" placeholder="Full name" />
+                                <p id="full_name_msg" class="input-status-msg"></p>
                             </div>
                         </div>
 
@@ -29,13 +24,8 @@
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input type="email" name="email_id" id="email_id" class="form-control form-control-sm reqField" placeholder="xyz@example.com" />
+                                <p id="email_id_msg" class="input-status-msg"></p>
                             </div>
                         </div>
 
@@ -43,13 +33,8 @@
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input type="password" name="login_password" id="login_password" class="form-control form-control-sm reqField" placeholder="Password" />
+                                <p id="login_password_msg" class="input-status-msg"></p>
                             </div>
                         </div>
 
@@ -57,15 +42,28 @@
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}</label>
 
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                                <input type="password" name="repeat_password" id="repeat_password" class="form-control form-control-sm reqField" placeholder="Confirm password" />
+                                <p id="repeat_password_msg" class="input-status-msg"></p>
                             </div>
                         </div>
 
+                        <div id="register_form_status" class="mt-3 mx-auto w-75"></div>
+
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
+
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <input type="hidden" name="redirect" value="{{ $redirect }}">
+									    <button type="button" id="register_form_submit" onclick="window.registerSubmit();" class="btn btn-primary">Register</button>
+                                    </div>
+                                    <div>
+                                        @php
+                                            $loginrUrl   = empty($redirect) ? route("login") : route("login", ["redirect" => $redirect]);
+                                        @endphp
+                                        <p class="text-right mb-0">Already registered? <a href="{{ $loginrUrl }}">Login here</a></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -74,4 +72,8 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/auth.js') }}"></script>
 @endsection

@@ -6,7 +6,7 @@
         {{-- <div class="card-header">{{ __('Dashboard') }}</div> --}}
 
         <div class="card-body">
-
+            @if(session('cart'))
             <table id="cart" class="table table-hover table-condensed">
                 <thead>
                     <tr>
@@ -20,11 +20,15 @@
                 <tbody>
                     @php
                         $total = 0;
-                        $photo  = "https://via.placeholder.com/100x100.png/?text=100x100";
                     @endphp
-                    @if(session('cart'))
+
                         @foreach(session('cart') as $id => $details)
-                            @php $total += $details['price'] * $details['quantity'] @endphp
+                            @php
+                                $photo  = $details['photo'];
+                                $photo  = product_img_src($photo, "100x100");
+
+                                $total += $details['price'] * $details['quantity']
+                            @endphp
                             <tr data-id="{{ $id }}">
                                 <td data-th="Product">
                                     <div class="row">
@@ -44,7 +48,7 @@
                                 </td>
                             </tr>
                         @endforeach
-                    @endif
+
                 </tbody>
                 <tfoot>
                     <tr>
@@ -53,58 +57,18 @@
                     <tr>
                         <td colspan="5" class="text-right">
                             <a href="{{ url('/') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a>
-                            <button id="checkoutBtn" class="btn btn-success">Checkout</button>
+                            <a href="{{ route('checkout') }}" class="btn btn-success">Checkout</a>
                         </td>
                     </tr>
                 </tfoot>
             </table>
+            @else
+                <div class="text-center py-5">
+                    <h3 class="text-danger">Your shopping cart is empty</h3>
+                    <a href="{{ url('/') }}" class="btn btn-primary">Continue Shopping <i class="fa fa-angle-right"></i></a>
+                </div>
+            @endif
         </div>
     </div>
 </div>
-@endsection
-
-
-@section('scripts')
-<script type="text/javascript">
-
-    $(".update-cart").change(function (e) {
-        e.preventDefault();
-
-        var ele = $(this);
-
-        $.ajax({
-            url: appUrl+"/cart/update",
-            method: "patch",
-            data: {
-                id: ele.parents("tr").attr("data-id"),
-                quantity: ele.parents("tr").find(".quantity").val(),
-                _token: '{{ csrf_token() }}',
-            },
-            success: function (response) {
-               window.location.reload();
-            }
-        });
-    });
-
-    $(".remove-from-cart").click(function (e) {
-        e.preventDefault();
-
-        var ele = $(this);
-
-        if(confirm("Are you sure want to remove?")) {
-            $.ajax({
-                url: appUrl+"/cart/remove",
-                method: "DELETE",
-                data: {
-                    id: ele.parents("tr").attr("data-id"),
-                    _token: '{{ csrf_token() }}',
-                },
-                success: function (response) {
-                    window.location.reload();
-                }
-            });
-        }
-    });
-
-</script>
 @endsection

@@ -14,10 +14,12 @@
                         <div class="product-grid-item">
                             @php
                                 $title  = $product->title;
-                                $price  = "&#8377;". number_format($product->price, 2);
-                                $photo  = "https://via.placeholder.com/640x480.png/?text=640x480";
+                                $price  = ol_rupee($product->price, 2);
 
-                                $productUrl = route('products.show', ['product' => $product->product_id]);
+                                $photo  = $product->photo;
+                                $photo  = product_img_src($photo, "640x480");
+
+                                $productUrl = route('products.single', ['id' => $product->product_id]);
                             @endphp
 
                             <a href="{{ $productUrl }}">
