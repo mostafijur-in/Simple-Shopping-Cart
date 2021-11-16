@@ -7,6 +7,22 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Project Setup Instructions
+
+1. Clone this repo to your local / remote server.
+2. Navigate to the application directory `cd Voting-System-App`.
+3. Copy `.env.example` to `.env` and update configuration values (Importantly the database connection).
+4. Run the following commands-\
+    `composer install`\
+    `php artisan key:generate`\
+    `php artisan migrate`\
+    `php artisan db:seed`\
+    `npm install && npm run dev`\
+    `php artisan serve`
+5. Now you can access the site at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), or follow the url displayed after the `php artisan serve` command.
+6. By default 1 admin account will be created with the user name `tonystark@ironman.ms` and password `HelloJarvis`.
+7. Admin URL: [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin)
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
